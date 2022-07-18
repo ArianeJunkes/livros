@@ -3,46 +3,46 @@ import axios from "axios";
 export default {
   data() {
     return {
-      novo_livro: "",
-      novo_preco: "",
-      novo_editora: "",
-      novo_categoria: "",
-      novo_autor: "",
       livros: [],
+      editoras: [],
+      categorias: [],
+      autores: [],
+      livro: {},
     };
   },
-   async created() {
-    const livros = await axios.get("http://localhost:4000/livros");
-    this.livros = livros.data;
+  async created() {
+    await this.buscarTodosOsAutores();
+    await this.buscarTodosAsCategorias();
+    await this.buscarTodosAsEditoras();
+    await this.buscarTodosOsLivros();
   },
   methods: {
-    async salvar() {
-      if (this.novo_livro !== ""){
-      const livro ={
-        name: this.novo_livro,
-        precoid: this.novo_preco,
-        editoracod: this.novo_editora,
-        categoria: this.novo_categoria,
-        autor: this.novo_autor,
-      }
-      const livro_criado = await axios.post(
-          "http://localhost:4000/livros",
-          livro
-        );
-        this.livros.push(livro_criado.data);
-        this.novo_livro = "";
-        this.novo_preco = "";
-        this.novo_editora = "";
-        this.novo_categoria = "";
-        this.novo_autor = "";
-      }
+    async buscarTodosOsLivros() {
+      const livros = await axios.get("http://localhost:4000/livros");
+      this.livros = livros.data;
     },
-    async excluir(livro){
+    async buscarTodosAsEditoras() {
+      const editoras = await axios.get("http://localhost:4000/editoras");
+      this.editoras = editoras.data;
+    },
+    async buscarTodosAsCategorias() {
+      const categorias = await axios.get("http://localhost:4000/categorias");
+      this.categorias = categorias.data;
+    },
+    async buscarTodosOsAutores() {
+      const autores = await axios.get("http://localhost:4000/autores");
+      this.autores = autores.data;
+    },
+    async salvar() {
+      await axios.post("http://localhost:4000/livros", this.livro);
+      await this.buscarTodosOsLivros();
+    },
+  },
+  async excluir(livro) {
       await axios.delete(`http://localhost:4000/livros/${livro.id}`);
       const indice = this.livros.indexOf(livro);
       this.livros.splice(indice, 1);
     },
-  },
 };
 </script>
 <template>
@@ -51,11 +51,34 @@ export default {
       <h2>Gerenciamento de livros</h2>
     </div>
     <div class="form-input">
-      <input type="text" placeholder="Nome" v-model="novo_livro" @keypress.enter="salvar" />
-      <input type="text" placeholder="Preço" v-model="novo_preco" @keypress.enter="salvar" />
-      <input type="text" placeholder="Código Editora" v-model="novo_editora" @keypress.enter="salvar" />
-      <input type="text" placeholder="Gênero" v-model="novo_categoria" @keypress.enter="salvar" />
-      <input type="text" placeholder="Nome Autor" v-model="novo_autor" @keypress.enter="salvar" />
+      <input
+        type="text"
+        placeholder="Nome"
+        v-model="livro.name"
+        @keypress.enter="salvar"
+      />
+      <!-- <input type="text" placeholder="Código Editora" v-model="novo_editora" @keypress.enter="salvar" /> -->
+      <select v-model="livro.editoraId">
+        <option v-for="editora in editoras" :key="editora.id" :value="editora.id">
+          {{ editora.name }}
+        </option>
+      </select>
+      <!-- <input type="text" placeholder="Gênero" v-model="novo_categoria" @keypress.enter="salvar" /> -->
+      <select v-model="livro.categoriaId">
+        <option
+          v-for="categoria in categorias"
+          :key="categoria.key"
+          :value="categoria.id"
+        >
+          {{ categoria.name }}
+        </option>
+      </select>
+      <!-- <input type="text" placeholder="Nome Autor" v-model="novo_autor" @keypress.enter="salvar" /> -->
+      <select v-model="livro.autorId">
+        <option v-for="autor in autores" :key="autor.id" :value="autor.id">
+          {{ autor.name }}
+        </option>
+      </select>
       <button @click="salvar">Salvar</button>
     </div>
     <div class="list-items">
@@ -64,7 +87,6 @@ export default {
           <tr>
             <th>ID</th>
             <th>Nome</th>
-            <th>R$</th>
             <th>Código Editora</th>
             <th>Categoria do Livro</th>
             <th>Autor</th>
@@ -73,12 +95,11 @@ export default {
         </thead>
         <tbody>
           <tr v-for="livro in livros" :key="livro.id">
-            <td>{{livro.id}}</td>
-            <td>{{livro.name}}</td>
-            <td>{{livro.precoid}}</td>
-            <td>{{livro.editoracod}}</td>
-            <td>{{livro.categoria}}</td>
-            <td>{{livro.autor}}</td>
+            <td>{{ livro.id }}</td>
+            <td>{{ livro.name }}</td>
+            <td>{{ livro.editoraId }}</td>
+            <td>{{ livro.categoriaId }}</td>
+            <td>{{ livro.autorId }}</td>
             <td>
               <button @click="excluir(livro)">Excluir</button>
             </td>

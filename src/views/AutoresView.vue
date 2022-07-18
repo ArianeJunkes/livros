@@ -5,7 +5,6 @@ export default {
     return {
       novo_autor: "",
       novo_idade: "",
-      novo_editora: "",
       novo_categoria: "",
       autores: [],
     };
@@ -21,7 +20,6 @@ export default {
         const autor = {
           name: this.novo_autor,
           idadeid: this.novo_idade,
-          editoracod: this.novo_editora,
           categoria: this.novo_categoria,
         };
         const autor_criado = await axios.post(
@@ -31,7 +29,6 @@ export default {
         this.autores.push(autor_criado.data);
         this.novo_autor = "";
         this.novo_idade = "";
-        this.novo_editora = "";
         this.novo_categoria = "";
       }
     },
@@ -63,12 +60,6 @@ export default {
       />
       <input
         type="text"
-        placeholder="Código Editora"
-        v-model="novo_editora"
-        @keypress.enter="salvar"
-      />
-      <input
-        type="text"
         placeholder="Gênero"
         v-model="novo_categoria"
         @keypress.enter="salvar"
@@ -82,7 +73,6 @@ export default {
             <th>ID</th>
             <th>Nome</th>
             <th>Idade</th>
-            <th>Código Editora</th>
             <th>Categoria do Livro</th>
             <th>Ação</th>
           </tr>
@@ -92,7 +82,6 @@ export default {
             <td>{{ autor.id }}</td>
             <td>{{ autor.name }}</td>
             <td>{{ autor.idadeid }}</td>
-            <td>{{ autor.editoracod }}</td>
             <td>{{ autor.categoria }}</td>
             <td>
               <button @click="excluir(autor)">Excluir</button>
