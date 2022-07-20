@@ -1,31 +1,29 @@
 <script>
-import axios from "axios";
+import EditorasApi from '@/api/editoras.js';
+const editorasApi = new EditorasApi();
 export default {
   data() {
     return {
-      novo_editora: "",
-      novo_codigo: "",
+      editora: {},
       editoras: [],
     };
   },
+
   async created() {
-    const editoras = await axios.get("http://localhost:4000/editoras");
-    this.editoras = editoras.data;
+    this.editoras = await editorasApi.buscarTodosAsEditoras();
   },
   methods: {
     async salvar() {
       if (this.novo_editora !== "") {
         const editora ={
           name: this.novo_editora,
-          codigo: this.novo_codigo,
-        }
+        };
         const editora_criado = await axios.post(
           "http://localhost:4000/editoras",
           editora
         );
         this.editoras.push(editora_criado.data);
         this.novo_editora = "";
-        this.novo_codigo = "";
       }
     },
     async excluir(editora) {
@@ -48,12 +46,6 @@ export default {
         v-model="novo_editora"
         @keypress.enter="salvar"
       />
-      <input
-        type="text"
-        placeholder="Código"
-        v-model="novo_codigo"
-        @keypress.enter="salvar"
-      />
       <button @click="salvar">Salvar</button>
     </div>
     <div class="list-items">
@@ -62,7 +54,6 @@ export default {
           <tr>
             <th>ID</th>
             <th>Nome</th>
-            <th>Código</th>
             <th>Ação</th>
           </tr>
         </thead>
@@ -70,7 +61,6 @@ export default {
           <tr v-for="editora in editoras" :key="editora.id">
             <td>{{ editora.id }}</td>
             <td>{{ editora.name }}</td>
-            <td>{{ editora.codigo }}</td>
             <td>
               <button @click="excluir(editora)">Excluir</button>
             </td>

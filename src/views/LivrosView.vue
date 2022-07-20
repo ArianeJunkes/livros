@@ -37,12 +37,12 @@ export default {
       await axios.post("http://localhost:4000/livros", this.livro);
       await this.buscarTodosOsLivros();
     },
-  },
-  async excluir(livro) {
+    async excluir(livro) {
       await axios.delete(`http://localhost:4000/livros/${livro.id}`);
       const indice = this.livros.indexOf(livro);
       this.livros.splice(indice, 1);
     },
+  },
 };
 </script>
 <template>
@@ -59,7 +59,11 @@ export default {
       />
       <!-- <input type="text" placeholder="Código Editora" v-model="novo_editora" @keypress.enter="salvar" /> -->
       <select v-model="livro.editoraId">
-        <option v-for="editora in editoras" :key="editora.id" :value="editora.id">
+        <option
+          v-for="editora in editoras"
+          :key="editora.id"
+          :value="editora.id"
+        >
           {{ editora.name }}
         </option>
       </select>
